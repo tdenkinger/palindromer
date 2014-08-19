@@ -10,6 +10,15 @@ class WordPalindromes
     read_dictionary dictionary
   end
 
+  def brute_force
+    @words.each_with_index do | word, i |
+      @words.each do | lookup_word |
+        next unless dictionary_word? lookup_word.reverse
+        test_for_palindrome word, lookup_word
+      end
+    end
+  end
+
   def find_all_palindromes
     @words.each{ | word | test_against_dictionary word }
   end
@@ -44,7 +53,6 @@ class WordPalindromes
 
   def read_dictionary dictionary
     File.open(dictionary).each do | word |
-      next if word.length == 2
       word = word.downcase.chomp
 
       @words.add word

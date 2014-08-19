@@ -2,9 +2,9 @@
 
 require "./lib/wordpalindromes"
 
-wp = WordPalindromes.new "../Words/Words/en.txt"
-wp.find_all_palindromes
+wp = WordPalindromes.new ARGV[0] || abort("Please pass in the path to a word list")
+# wp.find_all_palindromes
+wp.brute_force
 
-wp.palindromes.each do | palindrome_pair |
-  puts palindrome_pair.join " "
-end
+puts "Found #{wp.palindromes.count} palindrome pairs"
+
