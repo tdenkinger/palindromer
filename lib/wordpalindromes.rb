@@ -1,4 +1,5 @@
 require "set"
+require "ruby-progressbar"
 
 class WordPalindromes
   attr_reader :words, :lookup, :palindromes
@@ -11,7 +12,9 @@ class WordPalindromes
   end
 
   def brute_force
-    @words.each_with_index do | word, i |
+    progress_bar = ProgressBar.create(format: '%c/%C %b', starting_at: 0, total: @words.count)
+    @words.each do | word |
+      progress_bar.increment
       @words.each do | lookup_word |
         next unless dictionary_word? lookup_word.reverse
         test_for_palindrome word, lookup_word
