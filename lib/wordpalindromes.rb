@@ -1,5 +1,4 @@
 require "set"
-require "ruby-progressbar"
 
 class WordPalindromes
   attr_reader :words, :lookup, :palindromes
@@ -11,34 +10,14 @@ class WordPalindromes
     read_dictionary dictionary
   end
 
-  def brute_force
-    progress_bar = ProgressBar.create(format: '%c/%C %b', starting_at: 0, total: @words.count)
-    @words.each do | word |
-      progress_bar.increment
-      @words.each do | lookup_word |
-        next unless dictionary_word? lookup_word.reverse
-        test_for_palindrome word, lookup_word
-      end
-    end
-  end
-
   def find_all_palindromes
-    @words.each{ | word | test_against_dictionary word }
+    @words.each{ | word | test_against_lookup word[0], word }
   end
 
   private
 
-  def dictionary_word? word
-    @words.include? word
-  end
-
-  def test_against_dictionary word
-    return unless dictionary_word? word.reverse
-    test_against_index @lookup[word[-1]], word
-  end
-
-  def test_against_index index, word
-    index.each do | lookup_word |
+  def test_against_lookup index, word
+    @lookup[index].each do | lookup_word |
       test_for_palindrome word, lookup_word
     end
   end
@@ -57,9 +36,8 @@ class WordPalindromes
   def read_dictionary dictionary
     File.open(dictionary).each do | word |
       word = word.downcase.chomp
-
       @words.add word
-      @lookup[word[-1]] << word.reverse
+      @lookup[word[-1]] << word
     end
   end
 
