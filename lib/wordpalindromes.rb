@@ -1,4 +1,5 @@
 require "set"
+require "ruby-progressbar"
 
 class WordPalindromes
   attr_reader :words, :lookup, :palindromes
@@ -11,13 +12,20 @@ class WordPalindromes
   end
 
   def find_all_palindromes
-    @words.each{ | word | test_against_lookup word[0], word }
+    # progress_bar = ProgressBar.create(format: '%c/%C %b', starting_at: 0, total: @words.count)
+
+    @words.each do | word |
+      # progress_bar.increment
+      test_against_lookup word[0..1], word
+    end
   end
 
   private
 
-  def test_against_lookup index, word
-    @lookup[index].each do | lookup_word |
+  def test_against_lookup indexes, word
+    @lookup[indexes[0]][indexes[1]].each do | lookup_word |
+      next if lookup_word == word
+      next unless lookup_word.include?(word.reverse) || word.include?(lookup_word.reverse)
       test_for_palindrome word, lookup_word
     end
   end
@@ -37,11 +45,18 @@ class WordPalindromes
     File.open(dictionary).each do | word |
       word = word.downcase.chomp
       @words.add word
-      @lookup[word[-1]] << word
+      @lookup[word[-1]][word[-2]] << word
     end
   end
 
   def initialize_lookup_index
+    ('a'..'z').to_a.reduce({}) do | hash, letter |
+      hash[letter] = generate_hash
+      hash
+    end
+  end
+
+  def generate_hash
     ('a'..'z').to_a.reduce({}) do | hash, letter |
       hash[letter] = []
       hash
