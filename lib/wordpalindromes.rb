@@ -12,10 +12,10 @@ class WordPalindromes
   end
 
   def find_all_palindromes
-    # progress_bar = ProgressBar.create(format: '%c/%C %b', starting_at: 0, total: @words.count)
+    progress_bar = ProgressBar.create(format: '%c/%C %b', starting_at: 0, total: @words.count)
 
     @words.each do | word |
-      # progress_bar.increment
+      progress_bar.increment
       test_against_lookup word[0..1], word
     end
   end
