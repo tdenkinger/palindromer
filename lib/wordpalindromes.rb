@@ -16,13 +16,14 @@ class WordPalindromes
 
   private
 
-  def pad_letters array
-    array.push('') if array.length < 3
+  def pad_letters array, position = :end
+    array.push('')    if array.length < 3 && position == :end
+    array.unshift('') if array.length < 3 && position == :start
     array
   end
 
   def test_against_lookup word
-    letters = pad_letters(word[0..2].chars)
+    letters = pad_letters(word[0..2].chars, :end)
 
     @lookup[letters[0]][letters[1]][letters[2]].each do | lookup_word |
       next if lookup_word == word
@@ -51,8 +52,7 @@ class WordPalindromes
   end
 
   def add_word_to_lookup word
-    letters = word.chars
-    letters = letters.unshift("") if letters.length < 3
+    letters = pad_letters(word.chars, :start)
     @lookup[letters[-1]][letters[-2]][letters[-3]] << word
   end
 
