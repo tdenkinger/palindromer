@@ -26,3 +26,4 @@ pilgrim
 repel
 diva
 animal
+ts

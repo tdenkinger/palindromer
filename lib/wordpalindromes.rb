@@ -11,15 +11,20 @@ class WordPalindromes
   end
 
   def find_all_palindromes
-    @words.each do | word |
-      test_against_lookup word[0..1], word
-    end
+    @words.each{| word | test_against_lookup word }
   end
 
   private
 
-  def test_against_lookup indexes, word
-    @lookup[indexes[0]][indexes[1]].each do | lookup_word |
+  def pad_letters array
+    array.push('') if array.length < 3
+    array
+  end
+
+  def test_against_lookup word
+    letters = pad_letters(word[0..2].chars)
+
+    @lookup[letters[0]][letters[1]][letters[2]].each do | lookup_word |
       next if lookup_word == word
       next unless lookup_word.include?(word.reverse) || word.include?(lookup_word.reverse)
       test_for_palindrome word, lookup_word
@@ -41,13 +46,23 @@ class WordPalindromes
     File.open(dictionary).each do | word |
       word = word.downcase.chomp
       @words.add word
-      @lookup[word[-1]][word[-2]] << word
+      add_word_to_lookup word
     end
+  end
+
+  def add_word_to_lookup word
+    letters = word.chars
+    letters = letters.unshift("") if letters.length < 3
+    @lookup[letters[-1]][letters[-2]][letters[-3]] << word
   end
 
   def initialize_lookup_index
     ('a'..'z').to_a.reduce({}) do | hash, letter |
       hash[letter] = generate_hash
+      ('a'..'z').to_a.reduce({}) do | inner_hash, inner_letter |
+        hash[letter][inner_letter] = generate_hash
+      end
+
       hash
     end
   end
@@ -55,6 +70,7 @@ class WordPalindromes
   def generate_hash
     ('a'..'z').to_a.reduce({}) do | hash, letter |
       hash[letter] = []
+      hash[""] = []
       hash
     end
   end
